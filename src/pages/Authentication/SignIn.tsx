@@ -16,8 +16,7 @@ const SignIn: React.FC = () => {
 
 
   async function handleLogin(e : any) {
-    navigateTo("/register/register-aluno");
-    /*console.log("aqui")
+    
     e.preventDefault();
     if (login === "" || password === "") {
       toast.warning("Preencha todos os campos!");
@@ -30,26 +29,22 @@ const SignIn: React.FC = () => {
     sessionStorage.setItem("data", JSON.stringify(data));
 
     try {
-      const response = await api.post("/user/validation", data);
+      const response = await api.post("/usuario/login", data);
       if (response.status === 200 && isMounted) {
-        sessionStorage.setItem("token", response.data.access);
-        const userResponse = await api.get("/user/by-email/" + data.email);
-        if (userResponse.status === 200 && isMounted) {
-          sessionStorage.setItem("user", JSON.stringify(userResponse.data));
-        }
         toast.success("Login realizado com sucesso!");
-        navigateTo("/monitor");
+        navigateTo("/register/register-aluno");
+      }else{
+        toast.error("Usuário ou Senha Inválido");
       }
     } catch (error:any) {
       if (
-        error.response &&
-        error.response.data.Message === "Autenticação inválida."
+        error.response 
       ) {
         toast.error("Usuário ou Senha Inválido");
       } else {
         toast.error(error);
       }
-    }*/
+    }
   }
   useEffect(() => {
     setIsMounted(true);

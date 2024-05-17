@@ -253,7 +253,7 @@ const Aluno = (props) => {
             minWidth: "20rem",
             textAlign: "center",
             margin: "0 auto",
-            bottom: "10rem",
+            bottom: "16rem",
             border: "1px solid #ccc",
             background: "#fff",
             overflow: "auto",

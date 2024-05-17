@@ -29,6 +29,9 @@ ao entrar na pasta do projeto pelo terminal executar:
 
 ## Listagem de Alunos
 
+![alt text](image-2.png)
+
 
 ## Criar alunos
 
+![alt text](image-3.png)

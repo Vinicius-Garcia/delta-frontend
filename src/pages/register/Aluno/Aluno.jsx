@@ -50,93 +50,36 @@ const Aluno = (props) => {
   const [data, setData] = useState([]);
   const [page, setPage] = useState(0);
   const [openModal, setOpenModal] = useState(false);
-  const [editingEqp, setEditingEqp] = useState(null);
+  const [editingAluno, setEditingAluno] = useState(null);
   const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [ip, setIp] = useState("");
-  const [localId, setLocalId] = useState("");
-  const [locals, setLocals] = useState([]);
-  const [client, setClient] = useState([]);
-  const [user, setUser] = useState([]);
-  const [localName, setLocalName] = useState([]);
-  const [clientName, setClientName] = useState([]);
-  const [IndActive, setIndActive] = useState(0);
+  const [endereco, setEndereco] = useState("");
+  const [email, setEmail] = useState("");
+  const [telefone, setTelefone] = useState("");
+  const [id, setId] = useState();
 
   
-  const loadSelectOptions = async () => {
-    // Carregue as opções de clientes
-    const clientResponse = await api.get('/client');
-    if (clientResponse.status === 200) {
-      setClientOptions(clientResponse.data);
-    } else {
-      console.log(clientResponse.data);
-    }
-  
-    // Carregue as opções de locais
-    const localResponse = await api.get('/locations/list/');
-    if (localResponse.status === 200) {
-      setLocalOptions(localResponse.data);
-    } else {
-      console.log(localResponse.data);
-    }
-  };
 
-  const handleChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setLocalName(value);
-  };
-  const handleChangeClient = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setClientName(value);
-  };
   const rowsPerPage = 10;
-  const getLocals = (id) => {
-    api.get("/locations/list/").then((res) => {
-      if (res.status == 200) {
-        console.log(res.data);
-        setLocals(res.data);
-      } else {
-        console.log(res.data);
-      }
-    });
-    console.log(id);
-  };
-  const getClients = () => {
-    api.get("/client").then((res) => {
-      if (res.status == 200) {
-        setClient(res.data);
-      } else {
-        console.log(res.data);
-      }
-    });
-  };
+
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
 
-  function getEqpsAtt() {
-    api.get("/equipments/").then((res) => {
-      console.log(res.data);
+  function getAlunos() {
+    api.get("/alunos/").then((res) => {
       setData(res.data);
     });
   }
 
   const handleOpenModal = () => {
-    setEditingEqp(null);
+    setEditingAluno(null);
     setName("");
-    setDescription("");
-    setIp("");
-    setLocalId("");
-    setClientName("");
-    setLocalName("");
-    setIndActive(0);
+    setEmail("");
+    setId()
+    setTelefone("");
+    setEndereco("");
     setOpenModal(true);
-    getClients();
-    getLocals(user.client_id);
   };
 
   const handleCloseModal = () => {
@@ -144,47 +87,29 @@ const Aluno = (props) => {
   };
 
   useEffect(() => {
-    getUser();
-    const fetchData = async () => {
-      api.get("/equipments/").then((res) => {
-        setData(res.data);
-      });
-    };
-
-    fetchData();
+    getAlunos() 
   }, []);
 
-  const getUser = () => {
-    const users = sessionStorage.getItem("user");
-    setUser(users ? JSON.parse(users) : null);
-    if (users !== null) {
-      return JSON.parse(users);
-    } else {
-      return { user_type: "default" };
-    }
-  };
-  const editEqp = (eqp) => {
-    console.log(eqp)
-    setEditingEqp(eqp);
-    setName(eqp.Name);
-    setDescription(eqp.Description);
-    setIp(eqp.IP);
-    getClients();
-    setIndActive(eqp.IndActive);
-    setClientName(eqp.ClientID);
-    setLocalId(eqp.LocalID);
+
+  const editAlunos = (item) => {
+    console.log(item)
+    setName(item.nome);
+    setEmail(item.email);
+    setTelefone(item.telefone);
+    setEndereco(item.endereco);
+    setId(item.id)
+    setEditingAluno(item)
     setOpenModal(true);
-    loadSelectOptions()
   };
 
-  const deleteEqp = (Id) => {
+  const deleteAlunos= (Id) => {
     api
-      .delete("/equipments/delete/" + Id + "/")
+      .delete("/alunos/delete/" + Id + "/")
       .then((res) => {
         if (res.status == 200 || res.status == 204) {
           console.log(res);
-          toast.success("Equipamento Removido com Sucesso");
-          getEqpsAtt();
+          toast.success("Aluno Removido com Sucesso");
+          getAlunos();
         } else {
           toast.success(res.data);
         }
@@ -194,53 +119,50 @@ const Aluno = (props) => {
       });
   };
 
-  const addOrUpdateEqp = () => {
-    if (!name || !description || !ip) {
-      toast.error("Please fill in all required fields.");
+  const addOrUpdateAlunos = () => {
+    if (!name || !email || !telefone || !endereco) {
+      toast.error("Campos em branco.");
       return;
     }
 
-    const eqpObject = {
-      IP: ip,
-      ClientID: clientName,
-      LocalID: localName,
-      IndActive: IndActive,
-      Description: description,
-      Name: name,
+    const objetoAluno = {
+      nome : name,
+      email : email,
+      endereco : endereco,
+      telefone : telefone
     };
-    console.log(eqpObject);
-    if (editingEqp) {
+    if (editingAluno) {
       api
-        .put("/equipments/update/" + editingEqp.Id + "/", eqpObject)
+        .put("/alunos/update/" + id + "/", objetoAluno)
         .then((res) => {
           // Atualiza o estado data com os valores atualizados
           setData((prevData) =>
             prevData.map((eqp) =>
-              eqp.Id === editingEqp.Id ? { ...eqp, ...eqpObject } : eqp
+              eqp.Id === editingAluno.Id ? { ...eqp, ...objetoAluno } : eqp
             )
           );
-          toast.success("Equipment updated successfully.");
+          toast.success("Aluno atualizado com sucesso.");
           console.log(res);
-          getEqpsAtt();
+          getAlunos();
         })
         .catch((error) => {
-          toast.error("An error occurred while updating equipment.");
+          toast.error("Um erro ocorreu ao atualizar o aluno.");
           console.error(error);
         });
     } else {
       api
-        .post("/equipments/", eqpObject)
+        .post("/alunos/", objetoAluno)
         .then((res) => {
-          toast.success("Equipment added successfully.");
-          getEqpsAtt();
+          toast.success("Aluno Adicionado com Sucesso.");
+          getAlunos();
         })
         .catch((error) => {
-          toast.error("An error occurred while adding equipment.");
+          toast.error("Erro ao adicionar o aluno.");
         });
     }
 
     setOpenModal(false);
-    setEditingEqp(null);
+    setEditingAluno(null);
   };
 
   return (
@@ -265,37 +187,33 @@ const Aluno = (props) => {
                   <TableCell>EMAIL</TableCell>
                   <TableCell>TELEFONE</TableCell>
                   <TableCell>ENDEREÇO</TableCell>
-                  <TableCell>FOTO</TableCell>
-                  <TableCell>STATUS</TableCell>
                   <TableCell>AÇÕES</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {data
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((eqp) => (
-                    <TableRow key={eqp.Id}>
-                      <TableCell>{eqp.Id}</TableCell>
-                      <TableCell>{eqp.Name}</TableCell>
-                      <TableCell>{eqp.Description}</TableCell>
-                      <TableCell>{eqp.IP}</TableCell>
-                      <TableCell>{eqp.LocalID}</TableCell>
-                      <TableCell>{eqp.ClientID}</TableCell>
-                      <TableCell>{eqp.IndActive ? 'ATIVO' : 'INATIVO'}</TableCell>
+                  .map((item) => (
+                    <TableRow key={item.id}>
+                      <TableCell>{item.id}</TableCell>
+                      <TableCell>{item.nome}</TableCell>
+                      <TableCell>{item.email}</TableCell>
+                      <TableCell>{item.telefone}</TableCell>
+                      <TableCell>{item.endereco}</TableCell>
                       <TableCell
                         sx={{ width: "auto", display: "flex", gap: "1rem" }}
                       >
                         <EditIcon
                           sx={{ color: "blue", cursor: "pointer" }}
                           onClick={() => {
-                            editEqp(eqp);
+                            editAlunos(item);
                           }}
                         />
 
                         <DeleteIcon
                           sx={{ color: "red", cursor: "pointer" }}
                           onClick={() => {
-                            deleteEqp(eqp.Id);
+                            deleteAlunos(item.id);
                           }}
                         />
                       </TableCell>
@@ -362,35 +280,28 @@ const Aluno = (props) => {
           <TextField
             label="EMAIL"
             fullWidth
-            value={description}
+            value={email}
             required
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
           />
           <TextField
             label="TELEFONE"
             fullWidth
-            value={ip}
+            value={telefone}
             required
-            onChange={(e) => setIp(e.target.value)}
+            onChange={(e) => setTelefone(e.target.value)}
           />
-          
-         
-          <FormControl fullWidth>
-          <InputLabel id="demo-simple-select-label">Status</InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={IndActive}
-            label="Status"
-            onChange={(e) => setIndActive(e.target.value)}
-          >
-            <MenuItem value={'true'}>ATIVO</MenuItem>
-            <MenuItem value={'false'}>INATIVO</MenuItem>
-          </Select>
-        </FormControl>
+          <TextField
+            label="ENDEREÇO"
+            fullWidth
+            value={endereco}
+            required
+            onChange={(e) => setEndereco(e.target.value)}
+          />
+  
 
-          <ButtonRegister onClick={addOrUpdateEqp}>
-            {editingEqp ? "ATUALIZAR" : "CADASTRAR"}
+          <ButtonRegister onClick={addOrUpdateAlunos}>
+            {editingAluno ? "ATUALIZAR" : "CADASTRAR"}
           </ButtonRegister>
           <ButtonRegister $cancel={true} onClick={handleCloseModal}>
             CANCELAR

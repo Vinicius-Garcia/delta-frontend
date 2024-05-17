@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from "axios";
-var url = "http://localhost:8000"
+var url = "http://localhost:8080"
 
 const api: AxiosInstance = axios.create({
   baseURL: url,

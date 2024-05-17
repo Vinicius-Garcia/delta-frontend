@@ -16,7 +16,8 @@ const SignIn: React.FC = () => {
 
 
   async function handleLogin(e : any) {
-    console.log("aqui")
+    navigateTo("/register/register-aluno");
+    /*console.log("aqui")
     e.preventDefault();
     if (login === "" || password === "") {
       toast.warning("Preencha todos os campos!");
@@ -48,7 +49,7 @@ const SignIn: React.FC = () => {
       } else {
         toast.error(error);
       }
-    }
+    }*/
   }
   useEffect(() => {
     setIsMounted(true);

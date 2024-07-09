@@ -1,6 +1,6 @@
 # FrontEnd Desafio - Delta Global
 
-Frontend para o desafio fullstack da Delta Global
+Front-End para o desafio fullstack da Delta Global
 
 
 ### 📋 Pré-requisitos
